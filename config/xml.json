@@ -1,21 +1,14 @@
 {
-    "description": "Example for checking query string parameters",
+    "description": "Example for xml request",
     "request":{
         "method":"GET",
-        "path":"/search",
-        "queryStringParameters":{
-            "city":[
-            "Madrid"
-            ],
-            "postal_code":[
-            "08902"
-            ]
-        }
+        "path":"/xml"
+
     },
     "response":{
         "statusCode":200,
-        "headers":{  
-            "Content-Type":[  
+        "headers":{
+            "Content-Type":[
             "Content-type: text/xml"
             ]
         },
