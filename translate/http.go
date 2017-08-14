@@ -44,22 +44,44 @@ func (t HTTP) BuildRequestDefinitionFromHTTP(req *http.Request) definition.Reque
 }
 
 //WriteHTTPResponseFromDefinition read a mock response and write a http response.
-func (t HTTP) WriteHTTPResponseFromDefinition(fr *definition.Response, w http.ResponseWriter) {
+func (t HTTP) WriteHTTPResponseFromDefinition(fr *definition.Response, w http.ResponseWriter, r *http.Request) {
+	fmt.Println(fr.Body)
+	if strings.HasPrefix(fr.Body, "@") {
+		file := fr.Body[1:]
+		fmt.Println(file)
+		serveFile(file, w, r)
+	} else {
+		for header, values := range fr.Headers {
+			for _, value := range values {
+				w.Header().Add(header, value)
+			}
 
-	for header, values := range fr.Headers {
-		for _, value := range values {
-			w.Header().Add(header, value)
+		}
+		if len(fr.Cookies) > 0 {
+			cookies := []string{}
+			for cookie, value := range fr.Cookies {
+				cookies = append(cookies, fmt.Sprintf("%s=%s", cookie, value))
+			}
+			w.Header().Add("Set-Cookie", strings.Join(cookies, ";"))
 		}
 
-	}
-	if len(fr.Cookies) > 0 {
-		cookies := []string{}
-		for cookie, value := range fr.Cookies {
-			cookies = append(cookies, fmt.Sprintf("%s=%s", cookie, value))
-		}
-		w.Header().Add("Set-Cookie", strings.Join(cookies, ";"))
+		w.WriteHeader(fr.StatusCode)
+
+		fmt.Printf("BODY %s \n", fr.Body)
+		io.WriteString(w, fr.Body)
 	}
 
-	w.WriteHeader(fr.StatusCode)
-	io.WriteString(w, fr.Body)
+}
+
+func serveFile(f string, w http.ResponseWriter, r *http.Request) {
+	/*data, err := ioutil.ReadFile(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename="+"fileName.here")
+	w.Header().Set("Content-Transfer-Encoding", "binary")
+	w.Header().Set("Expires", "0")
+	http.ServeContent(w, r,f, time.Now(), bytes.NewReader(data))*/
+	http.ServeFile(w, r, f)
 }

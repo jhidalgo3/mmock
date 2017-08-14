@@ -1,0 +1,11 @@
+{
+	"description": "File",
+	"request": {
+		"method": "GET",
+		"path": "/file"
+	},
+	"response": {
+		"statusCode": 200,
+		"body": "@./config/hello.json"
+	}
+}

@@ -90,7 +90,7 @@ func (di *Dispatcher) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	//translate request
-	di.Translator.WriteHTTPResponseFromDefinition(match.Response, w)
+	di.Translator.WriteHTTPResponseFromDefinition(match.Response, w, req)
 
 	go di.recordMatchData(*match)
 }
